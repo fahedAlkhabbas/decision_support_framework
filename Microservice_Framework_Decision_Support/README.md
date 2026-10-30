@@ -64,36 +64,6 @@ wildguard_framework/
 └── tests/test_framework.py       # python -m pytest tests -q
 ```
 
-## Changes in version 2 (revision)
-
-* **Reproducibility.** Infrastructures are generated from explicit seeds, and
-  every generator parameter is documented. Instances can be exported and
-  imported as JSON. Experiments are repeated over several seeds and log every
-  setting. The model is built deterministically.
-* **Infrastructure.** Node MTBF and encryption compliance are now
-  heterogeneous, as in Fig. 2 of the paper. Nodes also have illustrative cost
-  and carbon-intensity attributes. `--homogeneous` restores the original values.
-* **Objectives.** Besides energy, the framework optimises latency, cost,
-  carbon, failure rate and security risk. It supports weighted-sum,
-  lexicographic and epsilon-constraint (Pareto) multi-objective optimisation.
-* **Optimality evidence.** Every optimisation run reports CP-SAT's proven
-  lower bound and the optimality gap.
-* **Ablation.** Each of the 12 constraint families, and each requirement
-  category, can be switched off. Deployments are always re-checked against the
-  full requirement set.
-* **Validation.** The Validation Manager now re-checks every requirement
-  independently of the solver model.
-* **Explanations.** Explanations cover placement rationale, tight constraints,
-  comparisons between deployments, trade-off rates along Pareto fronts, and
-  infeasibility diagnosis (minimal set of conflicting requirement families).
-* **Scenario.** The scenario was moved to a JSON file, so the model code is
-  scenario-independent.
-* **Encoding.** The encoding is equivalent but smaller. Hop-SLA and bandwidth
-  constraints are clauses over the placement variables instead of auxiliary
-  product variables, and statically ineligible placements are pruned (about
-  30k instead of about 400k variables at 100 nodes). The response-time
-  requirement is now checked against the node processing delay, as described
-  in the paper.
 
 ## Acknowledgement
-Parts of the software implementation were developed with the assistance of AI-based tools (ChatGPT, Manus and Claude). The AI tools were used to support code generation, documentation, and some refactoring. All code was reviewed, validated, and integrated by the authors, who take full responsibility for its correctness and originality.
+Parts of the software implementation were developed with the assistance of AI-based tools (ChatGPT, Manus and Claude). The AI tools were used to support code generation, documentation, and some refactoring. 
