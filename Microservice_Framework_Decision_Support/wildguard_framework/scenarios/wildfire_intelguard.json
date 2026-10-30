@@ -1,0 +1,64 @@
+{
+  "name": "Wildfire-IntelGuard",
+  "description": "IoT/microservice-based wildfire surveillance system used to illustrate and validate the framework. All scenario-specific knowledge (microservices, requirements, data flows, hop SLAs) lives in this file; the optimisation model itself is scenario-agnostic.",
+  "units": {
+    "cpu": "vCPU",
+    "memory": "GB",
+    "response_time": "ms",
+    "throughput": "events/s",
+    "mtbf": "hours",
+    "latency": "ms",
+    "bandwidth": "Mbps"
+  },
+  "system_nfrs": {
+    "availability": 99.5,
+    "performance": {"max_delay": 5000, "min_throughput": 30},
+    "security": 96
+  },
+  "replication_policy": [
+    {"min_availability": 99.9, "replicas": 2}
+  ],
+  "bandwidth_per_job": 0.1,
+  "privacy_compatibility": {
+    "low": ["low", "intermediate", "high"],
+    "intermediate": ["intermediate", "high"],
+    "high": ["high"]
+  },
+  "components": {
+    "EnvSensors":        {"cpu": 1, "memory": 2, "response_time": 20,  "throughput": 30, "privacy": "high",         "mtbf": 500},
+    "CameraSensor":      {"cpu": 2, "memory": 3, "response_time": 30,  "throughput": 30, "privacy": "high",         "mtbf": 500},
+    "VideoPreprocessor": {"cpu": 3, "memory": 4, "response_time": 40,  "throughput": 30, "privacy": "high",         "mtbf": 500},
+    "SensorFusion":      {"cpu": 3, "memory": 4, "response_time": 60,  "throughput": 30, "privacy": "intermediate", "mtbf": 1200},
+    "Avoid":             {"cpu": 2, "memory": 2, "response_time": 10,  "throughput": 30, "privacy": "high",         "mtbf": 500},
+    "DetectSmoke":       {"cpu": 4, "memory": 4, "response_time": 50,  "throughput": 30, "privacy": "high",         "mtbf": 500},
+    "PlanPath":          {"cpu": 3, "memory": 4, "response_time": 40,  "throughput": 30, "privacy": "intermediate", "mtbf": 1200},
+    "PredictFire":       {"cpu": 6, "memory": 8, "response_time": 100, "throughput": 30, "privacy": "intermediate", "mtbf": 1200},
+    "ManageBattery":     {"cpu": 2, "memory": 3, "response_time": 50,  "throughput": 30, "privacy": "high",         "mtbf": 500},
+    "StreamVideo":       {"cpu": 3, "memory": 4, "response_time": 80,  "throughput": 30, "privacy": "high",         "mtbf": 500},
+    "LogTelemetry":      {"cpu": 2, "memory": 4, "response_time": 120, "throughput": 30, "privacy": "low",          "mtbf": 2000},
+    "UpdateFirmware":    {"cpu": 2, "memory": 2, "response_time": 200, "throughput": 20, "privacy": "intermediate", "mtbf": 1200, "encryption_compliance": 96},
+    "DisplayStatus":     {"cpu": 2, "memory": 4, "response_time": 150, "throughput": 30, "privacy": "low",          "mtbf": 2000},
+    "EncryptData":       {"cpu": 2, "memory": 2, "response_time": 20,  "throughput": 30, "privacy": "intermediate", "mtbf": 1200, "encryption_compliance": 96}
+  },
+  "dataflows": {
+    "ControlLoop":   ["EnvSensors", "SensorFusion", "DetectSmoke", "PredictFire", "PlanPath", "Avoid"],
+    "VideoPath":     ["CameraSensor", "VideoPreprocessor", "EncryptData", "StreamVideo", "LogTelemetry", "DisplayStatus"],
+    "TelemetryPath": ["EnvSensors", "Avoid", "LogTelemetry", "DisplayStatus"],
+    "BatteryPath":   ["ManageBattery", "PlanPath"]
+  },
+  "latency_constraints": [
+    {"from": "EnvSensors",        "to": "SensorFusion",      "max_ms": 80},
+    {"from": "SensorFusion",      "to": "DetectSmoke",       "max_ms": 80},
+    {"from": "CameraSensor",      "to": "VideoPreprocessor", "max_ms": 80},
+    {"from": "VideoPreprocessor", "to": "EncryptData",       "max_ms": 80},
+    {"from": "DetectSmoke",       "to": "PredictFire",       "max_ms": 100},
+    {"from": "PredictFire",       "to": "PlanPath",          "max_ms": 100},
+    {"from": "PlanPath",          "to": "Avoid",             "max_ms": 50},
+    {"from": "DetectSmoke",       "to": "StreamVideo",       "max_ms": 150},
+    {"from": "EncryptData",       "to": "StreamVideo",       "max_ms": 50},
+    {"from": "StreamVideo",       "to": "LogTelemetry",      "max_ms": 300},
+    {"from": "LogTelemetry",      "to": "DisplayStatus",     "max_ms": 300},
+    {"from": "ManageBattery",     "to": "PlanPath",          "max_ms": 80},
+    {"from": "Avoid",             "to": "LogTelemetry",      "max_ms": 120}
+  ]
+}
